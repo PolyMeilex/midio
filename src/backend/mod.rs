@@ -8,25 +8,20 @@ mod winrt;
 #[cfg(target_os = "windows")]
 pub use self::winrt::*;
 
-#[cfg(all(target_os = "macos", not(feature = "jack")))]
+#[cfg(target_os = "macos")]
 mod coremidi;
-#[cfg(all(target_os = "macos", not(feature = "jack")))]
+#[cfg(target_os = "macos")]
 pub use self::coremidi::*;
 
-#[cfg(all(target_os = "ios", not(feature = "jack")))]
+#[cfg(target_os = "ios")]
 mod coremidi;
-#[cfg(all(target_os = "ios", not(feature = "jack")))]
+#[cfg(target_os = "ios")]
 pub use self::coremidi::*;
 
-#[cfg(all(target_os = "linux", not(feature = "jack")))]
+#[cfg(target_os = "linux")]
 mod alsa;
-#[cfg(all(target_os = "linux", not(feature = "jack")))]
+#[cfg(target_os = "linux")]
 pub use self::alsa::*;
-
-#[cfg(all(feature = "jack", not(target_os = "windows")))]
-mod jack;
-#[cfg(all(feature = "jack", not(target_os = "windows")))]
-pub use self::jack::*;
 
 #[cfg(target_arch = "wasm32")]
 mod webmidi;

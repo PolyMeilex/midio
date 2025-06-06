@@ -17,11 +17,8 @@ edition = "2021"
 default = []
 avoid_timestamping = []
 coremidi_send_timestamped = []
-jack = ["jack-sys", "libc"]
 
 [dependencies]
-bitflags = "1.2"
-jack-sys = { version = "0.5", optional = true }
 libc = { version = "0.2.21", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]

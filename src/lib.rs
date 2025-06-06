@@ -2,10 +2,6 @@
 #![warn(rust_2018_idioms)]
 #![warn(rust_2021_compatibility)]
 
-#[cfg(feature = "jack")]
-#[macro_use]
-extern crate bitflags;
-
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// An enum that is used to specify what kind of MIDI messages should

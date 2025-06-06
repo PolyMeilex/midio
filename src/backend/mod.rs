@@ -3,14 +3,9 @@
 // TODO: improve feature selection (make sure that there is always exactly one implementation, or enable dynamic backend selection)
 // TODO: allow to disable build dependency on ALSA
 
-#[cfg(all(target_os = "windows", not(feature = "winrt")))]
-mod winmm;
-#[cfg(all(target_os = "windows", not(feature = "winrt")))]
-pub use self::winmm::*;
-
-#[cfg(all(target_os = "windows", feature = "winrt"))]
+#[cfg(target_os = "windows")]
 mod winrt;
-#[cfg(all(target_os = "windows", feature = "winrt"))]
+#[cfg(target_os = "windows")]
 pub use self::winrt::*;
 
 #[cfg(all(target_os = "macos", not(feature = "jack")))]

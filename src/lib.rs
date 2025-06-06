@@ -42,12 +42,14 @@ impl Ignore {
 /// The timestamp is represented as the elapsed microseconds since
 /// a point in time that is arbitrary, but does not change for the
 /// lifetime of a given MidiInputConnection.
+#[allow(unused)]
 #[derive(Debug, Clone)]
 struct MidiMessage {
     bytes: Vec<u8>,
     timestamp: u64,
 }
 
+#[allow(unused)]
 impl MidiMessage {
     fn new() -> MidiMessage {
         MidiMessage {

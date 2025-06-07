@@ -37,10 +37,7 @@ mod example {
 
         let out_ports = midi_out.ports();
         let new_port = out_ports.last().unwrap();
-        println!(
-            "Connecting to port '{}' ...",
-            midi_out.port_name(&new_port).unwrap()
-        );
+        println!("Connecting to port '{}' ...", new_port.name());
         let mut conn_out = midi_out.connect(&new_port, "midir-test")?;
         println!("Starting to send messages ...");
         //sleep(Duration::from_millis(2000));

@@ -9,26 +9,6 @@ use errors::*;
 
 use crate::{backend, errors, Ignore, InitError};
 
-/// Trait that abstracts over input and output ports.
-pub trait MidiIO {
-    /// Type of an input or output port structure.
-    type Port: Clone;
-
-    /// Get a collection of all MIDI input or output ports.
-    /// The resulting vector contains one object per port, which you can use to
-    /// query metadata about the port or connect to it.
-    fn ports(&self) -> Vec<Self::Port>;
-
-    /// Get the number of available MIDI input or output ports.
-    fn port_count(&self) -> usize;
-
-    /// Get the name of a specified MIDI input or output port.
-    ///
-    /// An error will be returned when the port is no longer valid
-    /// (e.g. the respective device has been disconnected).
-    fn port_name(&self, port: &Self::Port) -> Result<String, PortInfoError>;
-}
-
 /// An object representing a single input port.
 /// How the port is identified internally is backend-dependent.
 /// If the backend allows it, port objects remain valid when
@@ -46,6 +26,11 @@ impl MidiInputPort {
     /// This identifier must be treated as an opaque string.
     pub fn id(&self) -> String {
         self.imp.id()
+    }
+
+    /// Get the name of a specified MIDI input port.
+    pub fn name(&self) -> &str {
+        self.imp.name()
     }
 }
 
@@ -82,14 +67,6 @@ impl MidiInput {
     /// Get the number of available MIDI input ports that *midir* can connect to.
     pub fn port_count(&self) -> usize {
         self.imp.port_count()
-    }
-
-    /// Get the name of a specified MIDI input port.
-    ///
-    /// An error will be returned when the port is no longer valid
-    /// (e.g. the respective device has been disconnected).
-    pub fn port_name(&self, port: &MidiInputPort) -> Result<String, PortInfoError> {
-        self.imp.port_name(&port.imp)
     }
 
     /// Get a MIDI input port by its unique identifier.
@@ -139,22 +116,6 @@ impl MidiInput {
                 ))
             }
         }
-    }
-}
-
-impl MidiIO for MidiInput {
-    type Port = MidiInputPort;
-
-    fn ports(&self) -> MidiInputPorts {
-        self.imp.ports_internal()
-    }
-
-    fn port_count(&self) -> usize {
-        self.imp.port_count()
-    }
-
-    fn port_name(&self, port: &MidiInputPort) -> Result<String, PortInfoError> {
-        self.imp.port_name(&port.imp)
     }
 }
 
@@ -218,6 +179,11 @@ impl MidiOutputPort {
     pub fn id(&self) -> String {
         self.imp.id()
     }
+
+    /// Get the name of a specified MIDI output port.
+    pub fn name(&self) -> &str {
+        self.imp.name()
+    }
 }
 
 /// A collection of output ports.
@@ -246,14 +212,6 @@ impl MidiOutput {
     /// Get the number of available MIDI output ports that *midir* can connect to.
     pub fn port_count(&self) -> usize {
         self.imp.port_count()
-    }
-
-    /// Get the name of a specified MIDI output port.
-    ///
-    /// An error will be returned when the port is no longer valid
-    /// (e.g. the respective device has been disconnected).
-    pub fn port_name(&self, port: &MidiOutputPort) -> Result<String, PortInfoError> {
-        self.imp.port_name(&port.imp)
     }
 
     /// Get a MIDI output port by its unique identifier.
@@ -287,22 +245,6 @@ impl MidiOutput {
                 ))
             }
         }
-    }
-}
-
-impl MidiIO for MidiOutput {
-    type Port = MidiOutputPort;
-
-    fn ports(&self) -> MidiOutputPorts {
-        self.imp.ports_internal()
-    }
-
-    fn port_count(&self) -> usize {
-        self.imp.port_count()
-    }
-
-    fn port_name(&self, port: &MidiOutputPort) -> Result<String, PortInfoError> {
-        self.imp.port_name(&port.imp)
     }
 }
 

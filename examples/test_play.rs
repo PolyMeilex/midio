@@ -22,14 +22,14 @@ fn run() -> Result<(), Box<dyn Error>> {
         1 => {
             println!(
                 "Choosing the only available output port: {}",
-                midi_out.port_name(&out_ports[0]).unwrap()
+                out_ports[0].name()
             );
             &out_ports[0]
         }
         _ => {
             println!("\nAvailable output ports:");
             for (i, p) in out_ports.iter().enumerate() {
-                println!("{}: {}", i, midi_out.port_name(p).unwrap());
+                println!("{}: {}", i, p.name());
             }
             print!("Please select output port: ");
             stdout().flush()?;

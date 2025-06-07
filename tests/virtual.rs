@@ -30,10 +30,7 @@ fn end_to_end() {
 
     let new_port: MidiOutputPort = midi_out.ports().into_iter().rev().next().unwrap();
 
-    println!(
-        "Connecting to port '{}' ...",
-        midi_out.port_name(&new_port).unwrap()
-    );
+    println!("Connecting to port '{}' ...", new_port.name());
     let mut conn_out = midi_out.connect(&new_port, "midir-test").unwrap();
     println!("Starting to send messages ...");
     conn_out.send(&[144, 60, 1]).unwrap();
@@ -59,10 +56,7 @@ fn end_to_end() {
 
     let new_port = midi_in.ports().into_iter().rev().next().unwrap();
 
-    println!(
-        "Connecting to port '{}' ...",
-        midi_in.port_name(&new_port).unwrap()
-    );
+    println!("Connecting to port '{}' ...", new_port.name(),);
     let conn_in = midi_in
         .connect(
             &new_port,

@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::{stdin, stdout, Write};
 
-use midir::{Ignore, MidiIO, MidiInput, MidiOutput};
+use midir::{Ignore, MidiInput, MidiInputPort, MidiOutput, MidiOutputPort};
 
 fn main() {
     match run() {
@@ -16,13 +16,13 @@ fn run() -> Result<(), Box<dyn Error>> {
     midi_in.ignore(Ignore::None);
     let midi_out = MidiOutput::new("midir forwarding output")?;
 
-    let in_port = select_port(&midi_in, "input")?;
+    let in_port = select_port_input(&midi_in, "input")?;
     println!();
-    let out_port = select_port(&midi_out, "output")?;
+    let out_port = select_port_output(&midi_out, "output")?;
 
     println!("\nOpening connections");
-    let in_port_name = midi_in.port_name(&in_port)?;
-    let out_port_name = midi_out.port_name(&out_port)?;
+    let in_port_name = in_port.name();
+    let out_port_name = out_port.name();
 
     let mut conn_out = midi_out.connect(&out_port, "midir-forward")?;
 
@@ -51,11 +51,27 @@ fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn select_port<T: MidiIO>(midi_io: &T, descr: &str) -> Result<T::Port, Box<dyn Error>> {
+fn select_port_output(midi_io: &MidiOutput, descr: &str) -> Result<MidiOutputPort, Box<dyn Error>> {
     println!("Available {} ports:", descr);
     let midi_ports = midi_io.ports();
     for (i, p) in midi_ports.iter().enumerate() {
-        println!("{}: {}", i, midi_io.port_name(p)?);
+        println!("{}: {}", i, p.name());
+    }
+    print!("Please select {} port: ", descr);
+    stdout().flush()?;
+    let mut input = String::new();
+    stdin().read_line(&mut input)?;
+    let port = midi_ports
+        .get(input.trim().parse::<usize>()?)
+        .ok_or("Invalid port number")?;
+    Ok(port.clone())
+}
+
+fn select_port_input(midi_io: &MidiInput, descr: &str) -> Result<MidiInputPort, Box<dyn Error>> {
+    println!("Available {} ports:", descr);
+    let midi_ports = midi_io.ports();
+    for (i, p) in midi_ports.iter().enumerate() {
+        println!("{}: {}", i, p.name());
     }
     print!("Please select {} port: ", descr);
     stdout().flush()?;

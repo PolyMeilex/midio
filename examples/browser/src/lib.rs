@@ -54,16 +54,13 @@ fn run() -> Result<bool, Box<dyn Error>> {
             return Ok(false);
         }
         [ref port] => {
-            println!(
-                "Choosing the only available input port: {}",
-                midi_in.port_name(port).unwrap()
-            );
+            println!("Choosing the only available input port: {}", port.name());
             port
         }
         _ => {
             let mut msg = "Choose an available input port:\n".to_string();
             for (i, port) in ports.iter().enumerate() {
-                msg.push_str(format!("{}: {}\n", i, midi_in.port_name(port).unwrap()).as_str());
+                msg.push_str(format!("{}: {}\n", i, port.name()).as_str());
             }
             loop {
                 if let Ok(Some(port_str)) = window.prompt_with_message_and_default(&msg, "0") {
@@ -78,7 +75,7 @@ fn run() -> Result<bool, Box<dyn Error>> {
     };
 
     println!("Opening connection");
-    let in_port_name = midi_in.port_name(in_port)?;
+    let in_port_name = in_port.name();
 
     // _conn_in needs to be a named parameter, because it needs to be kept alive until the end of the scope
     let _conn_in = midi_in.connect(

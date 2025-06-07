@@ -1,6 +1,7 @@
 use std::ffi::{CStr, CString};
 use std::io::{stderr, Write};
 use std::mem;
+use std::sync::Arc;
 use std::thread::{Builder, JoinHandle};
 
 use crate::{errors, Ignore, MidiMessage};
@@ -141,11 +142,16 @@ pub struct MidiInput {
 #[derive(Clone, PartialEq)]
 pub struct MidiInputPort {
     addr: Addr,
+    name: Arc<str>,
 }
 
 impl MidiInputPort {
     pub fn id(&self) -> String {
         format!("{}:{}", self.addr.client, self.addr.port)
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
     }
 }
 
@@ -191,7 +197,12 @@ impl MidiInput {
             self.seq.as_ref().unwrap(),
             PortCap::READ | PortCap::SUBS_READ,
             |p| crate::common::MidiInputPort {
-                imp: MidiInputPort { addr: p.addr() },
+                imp: MidiInputPort {
+                    addr: p.addr(),
+                    name: helpers::get_port_name(self.seq.as_ref().unwrap(), p.addr())
+                        .unwrap_or_else(|_| String::from("Unknown"))
+                        .into(),
+                },
             },
         )
     }
@@ -201,10 +212,6 @@ impl MidiInput {
             self.seq.as_ref().unwrap(),
             PortCap::READ | PortCap::SUBS_READ,
         )
-    }
-
-    pub fn port_name(&self, port: &MidiInputPort) -> Result<String, PortInfoError> {
-        helpers::get_port_name(self.seq.as_ref().unwrap(), port.addr)
     }
 
     fn init_queue(&mut self) -> i32 {
@@ -527,11 +534,16 @@ pub struct MidiOutput {
 #[derive(Clone, PartialEq)]
 pub struct MidiOutputPort {
     addr: Addr,
+    name: Arc<str>,
 }
 
 impl MidiOutputPort {
     pub fn id(&self) -> String {
         format!("{}:{}", self.addr.client, self.addr.port)
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
     }
 }
 
@@ -562,7 +574,12 @@ impl MidiOutput {
             self.seq.as_ref().unwrap(),
             PortCap::WRITE | PortCap::SUBS_WRITE,
             |p| crate::common::MidiOutputPort {
-                imp: MidiOutputPort { addr: p.addr() },
+                imp: MidiOutputPort {
+                    addr: p.addr(),
+                    name: helpers::get_port_name(self.seq.as_ref().unwrap(), p.addr())
+                        .unwrap_or_else(|_| String::from("Unknown"))
+                        .into(),
+                },
             },
         )
     }
@@ -572,10 +589,6 @@ impl MidiOutput {
             self.seq.as_ref().unwrap(),
             PortCap::WRITE | PortCap::SUBS_WRITE,
         )
-    }
-
-    pub fn port_name(&self, port: &MidiOutputPort) -> Result<String, PortInfoError> {
-        helpers::get_port_name(self.seq.as_ref().unwrap(), port.addr)
     }
 
     pub fn connect(

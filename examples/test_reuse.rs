@@ -22,7 +22,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     println!("Available input ports:");
     let midi_in_ports = midi_in.ports();
     for (i, p) in midi_in_ports.iter().enumerate() {
-        println!("{}: {}", i, midi_in.port_name(p)?);
+        println!("{}: {}", i, p.name());
     }
     print!("Please select input port: ");
     stdout().flush()?;
@@ -34,7 +34,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     println!("\nAvailable output ports:");
     let midi_out_ports = midi_out.ports();
     for (i, p) in midi_out_ports.iter().enumerate() {
-        println!("{}: {}", i, midi_out.port_name(p)?);
+        println!("{}: {}", i, p.name());
     }
     print!("Please select output port: ");
     stdout().flush()?;

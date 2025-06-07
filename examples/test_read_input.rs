@@ -23,14 +23,14 @@ fn run() -> Result<(), Box<dyn Error>> {
         1 => {
             println!(
                 "Choosing the only available input port: {}",
-                midi_in.port_name(&in_ports[0]).unwrap()
+                in_ports[0].name()
             );
             &in_ports[0]
         }
         _ => {
             println!("\nAvailable input ports:");
             for (i, p) in in_ports.iter().enumerate() {
-                println!("{}: {}", i, midi_in.port_name(p).unwrap());
+                println!("{}: {}", i, p.name());
             }
             print!("Please select input port: ");
             stdout().flush()?;
@@ -43,7 +43,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     };
 
     println!("\nOpening connection");
-    let in_port_name = midi_in.port_name(in_port)?;
+    let in_port_name = in_port.name();
 
     // _conn_in needs to be a named parameter, because it needs to be kept alive until the end of the scope
     let _conn_in = midi_in.connect(

@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::{stdin, stdout, Write};
 
-use midir::{Ignore, MidiInput, MidiInputPort, MidiOutput, MidiOutputPort};
+use midir::{MidiInput, MidiInputPort, MidiOutput, MidiOutputPort};
 
 fn main() {
     match run() {
@@ -12,8 +12,7 @@ fn main() {
 
 #[cfg(not(target_arch = "wasm32"))] // conn_out is not `Send` in Web MIDI, which means it cannot be passed to connect
 fn run() -> Result<(), Box<dyn Error>> {
-    let mut midi_in = MidiInput::new("midir forwarding input")?;
-    midi_in.ignore(Ignore::None);
+    let midi_in = MidiInput::new("midir forwarding input")?;
     let midi_out = MidiOutput::new("midir forwarding output")?;
 
     let in_port = select_port_input(&midi_in, "input")?;

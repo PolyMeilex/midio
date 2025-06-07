@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::{stdin, stdout, Write};
 
-use midir::{Ignore, MidiInput, MidiOutput};
+use midir::{MidiInput, MidiOutput};
 
 fn main() {
     match run() {
@@ -11,8 +11,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
-    let mut midi_in = MidiInput::new("midir test input")?;
-    midi_in.ignore(Ignore::None);
+    let midi_in = MidiInput::new("midir test input")?;
     let midi_out = MidiOutput::new("midir test output")?;
 
     let mut input = String::new();

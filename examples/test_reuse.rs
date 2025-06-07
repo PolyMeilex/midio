@@ -3,7 +3,7 @@ use std::io::{stdin, stdout, Write};
 use std::thread::sleep;
 use std::time::Duration;
 
-use midir::{Ignore, MidiInput, MidiOutput};
+use midir::{MidiInput, MidiOutput};
 
 fn main() {
     match run() {
@@ -16,7 +16,6 @@ fn run() -> Result<(), Box<dyn Error>> {
     let mut input = String::new();
 
     let mut midi_in = MidiInput::new("My Test Input")?;
-    midi_in.ignore(Ignore::None);
     let mut midi_out = MidiOutput::new("My Test Output")?;
 
     println!("Available input ports:");

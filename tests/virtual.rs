@@ -5,12 +5,12 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use midir::os::unix::{VirtualInput, VirtualOutput};
-use midir::{Ignore, MidiInput, MidiOutput, MidiOutputPort};
+use midir::{MidiInput, MidiOutput, MidiOutputPort};
 
 #[test]
 fn end_to_end() {
     let mut midi_in = MidiInput::new("My Test Input").unwrap();
-    midi_in.ignore(Ignore::None);
+
     let midi_out = MidiOutput::new("My Test Output").unwrap();
 
     let previous_count = midi_out.ports().len();

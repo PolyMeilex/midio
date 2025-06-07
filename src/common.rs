@@ -7,7 +7,7 @@ use backend::{
 };
 use errors::*;
 
-use crate::{backend, errors, Ignore, InitError};
+use crate::{backend, errors, InitError};
 
 /// An object representing a single input port.
 /// How the port is identified internally is backend-dependent.
@@ -40,7 +40,6 @@ pub type MidiInputPorts = Vec<MidiInputPort>;
 /// An instance of `MidiInput` is required for anything related to MIDI input.
 /// Create one with `MidiInput::new`.
 pub struct MidiInput {
-    //ignore_flags: Ignore
     imp: MidiInputImpl,
 }
 
@@ -48,12 +47,6 @@ impl MidiInput {
     /// Creates a new `MidiInput` object that is required for any MIDI input functionality.
     pub fn new(client_name: &str) -> Result<Self, InitError> {
         MidiInputImpl::new(client_name).map(|imp| MidiInput { imp })
-    }
-
-    /// Set flags to decide what kind of messages should be ignored (i.e., filtered out)
-    /// by this `MidiInput`. By default, no messages are ignored.
-    pub fn ignore(&mut self, flags: Ignore) {
-        self.imp.ignore(flags);
     }
 
     /// Get a collection of all MIDI input ports that *midir* can connect to.

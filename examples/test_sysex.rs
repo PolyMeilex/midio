@@ -13,13 +13,13 @@ mod example {
     use std::time::Duration;
 
     use midir::os::unix::VirtualInput;
-    use midir::{Ignore, MidiInput, MidiOutput};
+    use midir::{MidiInput, MidiOutput};
 
     const LARGE_SYSEX_SIZE: usize = 5572; // This is the maximum that worked for me
 
     pub fn run() -> Result<(), Box<dyn Error>> {
         let mut midi_in = MidiInput::new("My Test Input")?;
-        midi_in.ignore(Ignore::None);
+
         let midi_out = MidiOutput::new("My Test Output")?;
 
         let previous_count = midi_out.ports().len();

@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::{stdin, stdout, Write};
 
-use midir::{Ignore, MidiInput};
+use midir::MidiInput;
 
 fn main() {
     match run() {
@@ -13,8 +13,7 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let mut input = String::new();
 
-    let mut midi_in = MidiInput::new("midir reading input")?;
-    midi_in.ignore(Ignore::None);
+    let midi_in = MidiInput::new("midir reading input")?;
 
     // Get an input port (read from console if multiple are available)
     let in_ports = midi_in.ports();

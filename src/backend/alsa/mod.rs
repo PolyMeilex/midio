@@ -4,7 +4,7 @@ use std::mem;
 use std::sync::Arc;
 use std::thread::{Builder, JoinHandle};
 
-use crate::{errors, Ignore, MidiMessage};
+use crate::{errors, MidiMessage};
 
 use alsa::seq::{Addr, EventType, PortCap, PortInfo, PortSubscribe, PortType, QueueTempo};
 use alsa::{Direction, Seq};
@@ -123,7 +123,6 @@ mod helpers {
 const INITIAL_CODER_BUFFER_SIZE: usize = 32;
 
 pub struct MidiInput {
-    ignore_flags: Ignore,
     seq: Option<Seq>,
 }
 
@@ -151,7 +150,6 @@ pub struct MidiInputConnection<T: 'static> {
 }
 
 struct HandlerData<T: 'static> {
-    ignore_flags: Ignore,
     seq: Seq,
     trigger_rcv_fd: i32,
     callback: Box<dyn FnMut(u64, &[u8], &mut T) + Send>,
@@ -170,14 +168,7 @@ impl MidiInput {
         let c_client_name = CString::new(client_name).map_err(|_| InitError)?;
         seq.set_client_name(&c_client_name).map_err(|_| InitError)?;
 
-        Ok(MidiInput {
-            ignore_flags: Ignore::None,
-            seq: Some(seq),
-        })
-    }
-
-    pub fn ignore(&mut self, flags: Ignore) {
-        self.ignore_flags = flags;
+        Ok(MidiInput { seq: Some(seq) })
     }
 
     pub(crate) fn ports_internal(&self) -> Vec<crate::common::MidiInputPort> {
@@ -321,7 +312,6 @@ impl MidiInput {
 
         // Start our MIDI input thread.
         let handler_data = HandlerData {
-            ignore_flags: self.ignore_flags,
             seq: self.seq.take().unwrap(),
             trigger_rcv_fd: trigger_fds[0],
             callback: Box::new(callback),
@@ -400,7 +390,6 @@ impl MidiInput {
 
         // Start our MIDI input thread.
         let handler_data = HandlerData {
-            ignore_flags: self.ignore_flags,
             seq: self.seq.take().unwrap(),
             trigger_rcv_fd: trigger_fds[0],
             callback: Box::new(callback),
@@ -438,7 +427,6 @@ impl<T> MidiInputConnection<T> {
 
         (
             MidiInput {
-                ignore_flags: handler_data.ignore_flags,
                 seq: Some(handler_data.seq),
             },
             user_data,
@@ -791,8 +779,6 @@ fn handle_input<T>(mut data: HandlerData<T>, user_data: &mut T) -> HandlerData<T
                 message.bytes.clear()
             }
 
-            let ignore_flags = data.ignore_flags;
-
             // If here, there should be data.
             let mut ev = match seq_input.event_input() {
                 Ok(ev) => ev,
@@ -848,27 +834,27 @@ fn handle_input<T>(mut data: HandlerData<T>, user_data: &mut T) -> HandlerData<T
                 }
                 EventType::Qframe => {
                     // MIDI time code
-                    !ignore_flags.contains(Ignore::Time)
+                    true
                 }
                 EventType::Tick => {
                     // 0xF9 ... MIDI timing tick
-                    !ignore_flags.contains(Ignore::Time)
+                    true
                 }
                 EventType::Clock => {
                     // 0xF8 ... MIDI timing (clock) tick
-                    !ignore_flags.contains(Ignore::Time)
+                    true
                 }
                 EventType::Sensing => {
                     // Active sensing
-                    !ignore_flags.contains(Ignore::ActiveSense)
+                    true
                 }
                 EventType::Sysex => {
-                    if !ignore_flags.contains(Ignore::Sysex) {
-                        // Directly copy the data from the external buffer to our message
-                        message.bytes.extend_from_slice(ev.get_ext().unwrap());
-                        continue_sysex = *message.bytes.last().unwrap() != 0xF7;
-                    }
-                    false // don't ever decode sysex messages (it would unnecessarily copy the message content to another buffer)
+                    // Directly copy the data from the external buffer to our message
+                    message.bytes.extend_from_slice(ev.get_ext().unwrap());
+                    continue_sysex = *message.bytes.last().unwrap() != 0xF7;
+
+                    // don't ever decode sysex messages (it would unnecessarily copy the message content to another buffer)
+                    false
                 }
                 _ => true,
             };

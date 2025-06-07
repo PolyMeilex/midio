@@ -6,7 +6,7 @@ use web_sys::console;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 
-use midir::{Ignore, MidiInput};
+use midir::MidiInput;
 
 pub fn log(s: String) {
     console::log(&Array::of1(&s.into()));
@@ -43,8 +43,7 @@ pub fn start() {
 fn run() -> Result<bool, Box<dyn Error>> {
     let window = web_sys::window().expect("no global `window` exists");
 
-    let mut midi_in = MidiInput::new("midir reading input")?;
-    midi_in.ignore(Ignore::None);
+    let midi_in = MidiInput::new("midir reading input")?;
 
     // Get an input port
     let ports = midi_in.ports();

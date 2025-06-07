@@ -36,18 +36,6 @@ mod helpers {
     }
 
     #[inline]
-    pub fn get_port_count(s: &Seq, capability: PortCap) -> usize {
-        ClientIter::new(s)
-            .flat_map(|c| PortIter::new(s, c.get_client()))
-            .filter(|p| {
-                p.get_type()
-                    .intersects(PortType::MIDI_GENERIC | PortType::SYNTH | PortType::APPLICATION)
-            })
-            .filter(|p| p.get_capability().contains(capability))
-            .count()
-    }
-
-    #[inline]
     pub fn get_port_name(s: &Seq, addr: Addr) -> Result<String, PortInfoError> {
         use std::fmt::Write;
 
@@ -204,13 +192,6 @@ impl MidiInput {
                         .into(),
                 },
             },
-        )
-    }
-
-    pub fn port_count(&self) -> usize {
-        helpers::get_port_count(
-            self.seq.as_ref().unwrap(),
-            PortCap::READ | PortCap::SUBS_READ,
         )
     }
 
@@ -581,13 +562,6 @@ impl MidiOutput {
                         .into(),
                 },
             },
-        )
-    }
-
-    pub fn port_count(&self) -> usize {
-        helpers::get_port_count(
-            self.seq.as_ref().unwrap(),
-            PortCap::WRITE | PortCap::SUBS_WRITE,
         )
     }
 

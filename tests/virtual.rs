@@ -13,7 +13,7 @@ fn end_to_end() {
     midi_in.ignore(Ignore::None);
     let midi_out = MidiOutput::new("My Test Output").unwrap();
 
-    let previous_count = midi_out.port_count();
+    let previous_count = midi_out.ports().len();
 
     println!("Creating virtual input port ...");
     let conn_in = midi_in
@@ -26,7 +26,7 @@ fn end_to_end() {
         )
         .unwrap();
 
-    assert_eq!(midi_out.port_count(), previous_count + 1);
+    assert_eq!(midi_out.ports().len(), previous_count + 1);
 
     let new_port: MidiOutputPort = midi_out.ports().into_iter().rev().next().unwrap();
 
@@ -45,14 +45,14 @@ fn end_to_end() {
     let midi_out = conn_out.close();
     println!("Closing virtual input ...");
     let midi_in = conn_in.close().0;
-    assert_eq!(midi_out.port_count(), previous_count);
+    assert_eq!(midi_out.ports().len(), previous_count);
 
-    let previous_count = midi_in.port_count();
+    let previous_count = midi_in.ports().len();
 
     // reuse midi_in and midi_out, but swap roles
     println!("\nCreating virtual output port ...");
     let mut conn_out = midi_out.create_virtual("midir-test").unwrap();
-    assert_eq!(midi_in.port_count(), previous_count + 1);
+    assert_eq!(midi_in.ports().len(), previous_count + 1);
 
     let new_port = midi_in.ports().into_iter().rev().next().unwrap();
 
@@ -80,5 +80,5 @@ fn end_to_end() {
     let midi_in = conn_in.close().0;
     println!("Closing virtual output ...");
     conn_out.close();
-    assert_eq!(midi_in.port_count(), previous_count);
+    assert_eq!(midi_in.ports().len(), previous_count);
 }

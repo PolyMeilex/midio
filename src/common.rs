@@ -64,16 +64,6 @@ impl MidiInput {
         self.imp.ports_internal()
     }
 
-    /// Get the number of available MIDI input ports that *midir* can connect to.
-    pub fn port_count(&self) -> usize {
-        self.imp.port_count()
-    }
-
-    /// Get a MIDI input port by its unique identifier.
-    pub fn find_port_by_id(&self, id: String) -> Option<MidiInputPort> {
-        self.ports().into_iter().find(|port| port.id() == id)
-    }
-
     /// Connect to a specified MIDI input port in order to receive messages.
     /// For each incoming MIDI message, the provided `callback` function will
     /// be called. The first parameter of the callback function is a timestamp
@@ -207,16 +197,6 @@ impl MidiOutput {
     /// MIDI messages.
     pub fn ports(&self) -> MidiOutputPorts {
         self.imp.ports_internal()
-    }
-
-    /// Get the number of available MIDI output ports that *midir* can connect to.
-    pub fn port_count(&self) -> usize {
-        self.imp.port_count()
-    }
-
-    /// Get a MIDI output port by its unique identifier.
-    pub fn find_port_by_id(&self, id: String) -> Option<MidiOutputPort> {
-        self.ports().into_iter().find(|port| port.id() == id)
     }
 
     /// Connect to a specified MIDI output port in order to send messages.

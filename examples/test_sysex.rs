@@ -22,7 +22,7 @@ mod example {
         midi_in.ignore(Ignore::None);
         let midi_out = MidiOutput::new("My Test Output")?;
 
-        let previous_count = midi_out.port_count();
+        let previous_count = midi_out.ports().len();
 
         println!("Creating virtual input port ...");
         let conn_in = midi_in.create_virtual(
@@ -33,7 +33,7 @@ mod example {
             (),
         )?;
 
-        assert_eq!(midi_out.port_count(), previous_count + 1);
+        assert_eq!(midi_out.ports().len(), previous_count + 1);
 
         let out_ports = midi_out.ports();
         let new_port = out_ports.last().unwrap();
